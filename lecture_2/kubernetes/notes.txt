@@ -1,0 +1,3 @@
+minikube start --driver qemu --network socket_vmnet
+
+minikube image load second-image

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: main
+  namespace: main
+spec:
+  type: LoadBalancer
+  # Метки селектора, использованные в шаблоне подов при создании объекта Deployment.
+  selector:
+    app: main
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80 # Порт сетевого балансировщика, на котором будут обслуживаться пользовательские запросы.
+      targetPort: 8080 # Порт контейнера, на котором доступно приложение.
