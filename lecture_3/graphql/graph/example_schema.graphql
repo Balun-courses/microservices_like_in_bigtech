@@ -1,0 +1,21 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Person {
+  id: Int!
+  name: String!
+  pet: Pet
+}
+
+type Pet {
+  id: Int!
+  name: String!
+}
+
+type Query {
+  person: [Person!]!
+  pet: [Pet!]!
+  person_by_id(id :Int!): Person
+  pet_by_id(id :Int!): Pet
+}
