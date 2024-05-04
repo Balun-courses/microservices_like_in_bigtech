@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package github.com.Balun_courses.microservices_like_in_bigtech.grpc_gateway;
+
+import "api/notes/messages.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/Balun-courses/microservices_like_in_bigtech/grpc_gateway/pkg/api/notes;notes";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Notes service";
+    version: "1.0";
+    contact: {
+      name: "gRPC-Gateway project";
+      url: "https://github.com/grpc-ecosystem/grpc-gateway";
+      email: "none@example.com";
+    };
+    license: {
+      name: "BSD 3-Clause License";
+      url: "https://github.com/grpc-ecosystem/grpc-gateway/blob/main/LICENSE";
+    };    
+  };
+  external_docs: {
+    url: "https://github.com/grpc-ecosystem/grpc-gateway";
+    description: "More about gRPC-Gateway";
+  };
+  schemes: HTTP;
+  schemes: HTTPS;
+};
+
+// NotesService - notes service
+service NotesService {
+  // SaveNote - save note
+  rpc SaveNote(SaveNoteRequest) returns (SaveNoteResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/notes"
+      body: "info"
+    };
+  }
+  // ListNotes - list all notes
+  rpc ListNotes(ListNotesRequest) returns (ListNotesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/notes"
+    };
+  }
+}
+

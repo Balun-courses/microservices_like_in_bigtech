@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Balun-courses/microservices_like_in_bigtech/lecture_4jsonrpc/model"
 	"github.com/gorilla/rpc/v2"
 	"github.com/gorilla/rpc/v2/json"
-	"github.com/moguchev/microservices_courcse/jsonrpc/model"
 )
 
 // Service - our service

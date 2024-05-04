@@ -1,4 +1,4 @@
-module github.com/moguchev/microservices_courcse/graphql
+module github.com/Balun-courses/microservices_like_in_bigtech/lecture_4graphql
 
 go 1.21.4
 

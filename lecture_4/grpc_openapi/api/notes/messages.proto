@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package github.com.Balun_courses.microservices_like_in_bigtech.grpc_gateway;
+
+import "buf/validate/validate.proto";
+import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/Balun-courses/microservices_like_in_bigtech/grpc_gateway/pkg/api/notes;notes";
+
+
+// NoteInfo - информация заметки
+message NoteInfo {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "NoteInfo"
+      description: "NoteInfo - информация заметки"
+      required: ["title", "content"]
+      example: "{\"title\": \"note 1\", \"content\": \"hello world\"}"
+    }
+    external_docs: {
+      url: "https://github.com/grpc-ecosystem/grpc-gateway";
+      description: "Find out more about ABitOfEverything";
+    }
+  };
+  // title - название заметки
+  string title = 1 [json_name = "title", (buf.validate.field).string.min_len = 1, (google.api.field_behavior) = REQUIRED];
+  // content - содержимое заметки
+  string content = 2 [json_name = "content", (buf.validate.field).string.min_len = 1, (google.api.field_behavior) = REQUIRED];
+}
+
+// Note - full note model
+message Note {
+  // id - уникальный идентификатор записи
+  uint64 id = 1 [json_name = "id"];
+  // info - 
+  NoteInfo info = 2 [json_name = "info"];
+}
+
+// SaveNoteRequest - запрос SaveNote
+message SaveNoteRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "SaveNoteRequest"
+      description: "SaveNoteRequest - запрос SaveNote"
+      required: ["info"]
+    }
+    external_docs: {
+      url: "https://github.com/grpc-ecosystem/grpc-gateway";
+      description: "Find out more about ABitOfEverything";
+    }
+  };
+
+  // info - информация записи (контент)
+  NoteInfo info = 1 [json_name = "info", (buf.validate.field).required = true, (google.api.field_behavior) = REQUIRED];
+}
+
+// SaveNoteResponse - ответ SaveNote
+message SaveNoteResponse {
+  // id - уникальный идентификатор записи
+  uint64 id = 1 [json_name = "id"];
+}
+
+// ListNotesRequest - запрос ListNotes
+message ListNotesRequest {
+
+}
+
+// ListNotesResponse - ответ ListNotes
+message ListNotesResponse {
+  // notes - все записи
+  repeated Note notes = 1 [json_name = "notes"];
+}

@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/moguchev/microservices_courcse/jsonrpc/model"
+	"github.com/Balun-courses/microservices_like_in_bigtech/lecture_4jsonrpc/model"
 )
 
 type JSONRPC2Request struct {

@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/moguchev/microservices_courcse/graphql/graph/model"
+	"github.com/Balun-courses/microservices_like_in_bigtech/lecture_4graphql/graph/model"
 )
 
 // Person is the resolver for the person field.

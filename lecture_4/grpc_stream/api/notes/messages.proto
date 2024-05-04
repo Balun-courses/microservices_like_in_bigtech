@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package github.com.Balun_courses.microservices_like_in_bigtech.grpc_stream;
+
+option go_package = "github.com/Balun-courses/microservices_like_in_bigtech/grpc_stream/pkg/api/notes;notes";
+
+
+// NoteInfo - информация записи
+message NoteInfo {
+  // title - название записи
+  string title = 1;
+  // content - содержимое записи
+  string content = 2;
+}
+
+// Note - full note model
+message Note {
+  // id - уникальный идентификатор записи
+  uint64 id = 1;
+  // info - 
+  NoteInfo info = 2;
+}
+
+// ListNotesStreamRequest - запрос ListNotesStream
+message ListNotesStreamRequest {
+
+}

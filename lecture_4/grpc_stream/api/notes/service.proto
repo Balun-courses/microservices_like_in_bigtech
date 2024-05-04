@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package github.com.Balun_courses.microservices_like_in_bigtech.grpc_stream;
+
+import "api/notes/messages.proto";
+
+option go_package = "github.com/Balun-courses/microservices_like_in_bigtech/grpc_stream/pkg/api/notes;notes";
+
+
+// NotesService - notes service
+service NotesService {
+  // SaveNotesStream - save notes
+  rpc SaveNotesStream(stream NoteInfo) returns (stream Note) {}
+  // ListNotesStream - list all notes in stream
+  rpc ListNotesStream(ListNotesStreamRequest) returns (stream Note) {}
+}
+

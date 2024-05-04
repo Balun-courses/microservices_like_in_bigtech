@@ -1,0 +1,192 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Notes service",
+    "version": "1.0",
+    "contact": {
+      "name": "gRPC-Gateway project",
+      "url": "https://github.com/grpc-ecosystem/grpc-gateway",
+      "email": "none@example.com"
+    },
+    "license": {
+      "name": "BSD 3-Clause License",
+      "url": "https://github.com/grpc-ecosystem/grpc-gateway/blob/main/LICENSE"
+    }
+  },
+  "tags": [
+    {
+      "name": "NotesService"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/notes": {
+      "get": {
+        "summary": "ListNotes - list all notes",
+        "operationId": "NotesService_ListNotes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpc_gatewayListNotesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "NotesService"
+        ]
+      },
+      "post": {
+        "summary": "SaveNote - save note",
+        "operationId": "NotesService_SaveNote",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/grpc_gatewaySaveNoteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "info",
+            "description": "info - информация записи (контент)",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/grpc_gatewayNoteInfo",
+              "required": [
+                "info"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "NotesService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "grpc_gatewayListNotesResponse": {
+      "type": "object",
+      "properties": {
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/grpc_gatewayNote"
+          },
+          "title": "notes - все записи"
+        }
+      },
+      "title": "ListNotesResponse - ответ ListNotes"
+    },
+    "grpc_gatewayNote": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "id - уникальный идентификатор записи"
+        },
+        "info": {
+          "$ref": "#/definitions/grpc_gatewayNoteInfo",
+          "title": "info -"
+        }
+      },
+      "title": "Note - full note model"
+    },
+    "grpc_gatewayNoteInfo": {
+      "type": "object",
+      "example": {
+        "title": "note 1",
+        "content": "hello world"
+      },
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "title - название заметки"
+        },
+        "content": {
+          "type": "string",
+          "title": "content - содержимое заметки"
+        }
+      },
+      "description": "NoteInfo - информация заметки",
+      "title": "NoteInfo",
+      "externalDocs": {
+        "description": "Find out more about ABitOfEverything",
+        "url": "https://github.com/grpc-ecosystem/grpc-gateway"
+      },
+      "required": [
+        "title",
+        "content"
+      ]
+    },
+    "grpc_gatewaySaveNoteResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "id - уникальный идентификатор записи"
+        }
+      },
+      "title": "SaveNoteResponse - ответ SaveNote"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "More about gRPC-Gateway",
+    "url": "https://github.com/grpc-ecosystem/grpc-gateway"
+  }
+}

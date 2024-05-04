@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package github.com.Balun_courses.microservices_like_in_bigtech.grpc_validate;
+
+import "buf/validate/validate.proto";
+
+option go_package = "github.com/Balun-courses/microservices_like_in_bigtech/grpc_validate/pkg/api/notes;notes";
+
+
+// NoteInfo - информация записи
+message NoteInfo {
+  // title - название записи
+  string title = 1 [json_name = "title", (buf.validate.field).string.min_len = 1];
+  // content - содержимое записи
+  string content = 2 [json_name = "content", (buf.validate.field).string.min_len = 1];
+}
+
+// Note - full note model
+message Note {
+  // id - уникальный идентификатор записи
+  uint64 id = 1 [json_name = "id"];
+  // info - 
+  NoteInfo info = 2 [json_name = "info"];
+}
+
+// SaveNoteRequest - запрос SaveNote
+message SaveNoteRequest {
+  // info - информация записи (контент)
+  NoteInfo info = 1 [json_name = "info", (buf.validate.field).required = true];
+}
+
+// SaveNoteResponse - ответ SaveNote
+message SaveNoteResponse {
+  // id - уникальный идентификатор записи
+  uint64 id = 1 [json_name = "id"];
+}
+
+// ListNotesRequest - запрос ListNotes
+message ListNotesRequest {
+
+}
+
+// ListNotesResponse - ответ ListNotes
+message ListNotesResponse {
+  // notes - все записи
+  repeated Note notes = 1 [json_name = "notes"];
+}
