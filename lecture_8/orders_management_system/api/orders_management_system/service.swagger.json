@@ -1,0 +1,199 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Orders Management System Service",
+    "version": "1.0",
+    "contact": {
+      "name": "gRPC-Gateway project",
+      "url": "https://github.com/grpc-ecosystem/grpc-gateway",
+      "email": "none@example.com"
+    },
+    "license": {
+      "name": "BSD 3-Clause License",
+      "url": "https://github.com/grpc-ecosystem/grpc-gateway/blob/main/LICENSE"
+    }
+  },
+  "tags": [
+    {
+      "name": "OrdersManagementSystemService"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/orders": {
+      "post": {
+        "summary": "CreateOrder - метод создания заказа",
+        "operationId": "OrdersManagementSystemService_CreateOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/orders_management_systemCreateOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "CreateOrderRequest - запрос CreateOrder",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orders_management_systemCreateOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "OrdersManagementSystemService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "CreateOrderRequestDeliveryInfo": {
+      "type": "object",
+      "properties": {
+        "delivery_variant_id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "delivery_variant_id - id способа доставки"
+        },
+        "delivery_date": {
+          "type": "string",
+          "format": "date-time",
+          "title": "delivery_date - срок доставки"
+        }
+      },
+      "title": "DeliveryInfo - информация о доставке",
+      "required": [
+        "delivery_variant_id",
+        "delivery_date"
+      ]
+    },
+    "CreateOrderRequestSKU": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "id - id SKU"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int64",
+          "title": "quantity - количество"
+        },
+        "warehouse_id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "warehouse_id - id склада, на котором лежит данный SKU"
+        }
+      },
+      "title": "SKU - товарная единица",
+      "required": [
+        "id",
+        "quantity",
+        "warehouse_id"
+      ]
+    },
+    "orders_management_systemCreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "uint64",
+          "title": "user_id - id пользователя"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/CreateOrderRequestSKU"
+          },
+          "title": "items - товары в заказе"
+        },
+        "delivery_info": {
+          "$ref": "#/definitions/CreateOrderRequestDeliveryInfo",
+          "title": "delivery_info - информация о доставке"
+        }
+      },
+      "description": "CreateOrderRequest - запрос CreateOrder",
+      "title": "CreateOrderRequest",
+      "externalDocs": {
+        "description": "Find out more about ABitOfEverything",
+        "url": "https://github.com/grpc-ecosystem/grpc-gateway"
+      },
+      "required": [
+        "user_id",
+        "items",
+        "delivery_info"
+      ]
+    },
+    "orders_management_systemCreateOrderResponse": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "2438ac3c-37eb-4902-adef-ed16b4431030",
+          "description": "id созданного заказа",
+          "title": "order_id",
+          "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
+        }
+      },
+      "description": "CreateOrderRequest - ответ CreateOrder",
+      "title": "CreateOrderResponse",
+      "externalDocs": {
+        "description": "Find out more about ABitOfEverything",
+        "url": "https://github.com/grpc-ecosystem/grpc-gateway"
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "More about gRPC-Gateway",
+    "url": "https://github.com/grpc-ecosystem/grpc-gateway"
+  }
+}

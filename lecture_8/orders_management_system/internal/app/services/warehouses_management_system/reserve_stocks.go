@@ -1,0 +1,20 @@
+package warehouses_management_system
+
+import (
+	"context"
+
+	"github.com/Balun-courses/microservices_like_in_bigtech/lecture_8/orders_management_system/internal/app/models"
+)
+
+func (r *Client) ReserveStocks(
+	ctx context.Context,
+	userID models.UserID,
+	items []models.Item,
+) error {
+	// const api = "warehouses_management_system.ReserveStocks"
+
+	/* call exteranl service */
+
+	return nil
+	// return pkgerrors.Wrap(api, models.ErrUnimplemented)
+}

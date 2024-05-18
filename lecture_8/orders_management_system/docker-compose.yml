@@ -1,0 +1,25 @@
+version: "3.4"
+
+networks:
+  postgres:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: orders_management_system
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_HOST_AUTH_METHOD: trust
+    container_name: 'postgresql-orders-management-system'
+    volumes:
+      - ./postgres.conf:/etc/postgresql/postgresql.conf # конфиг БД
+      - ./docker/postgresql/data:/var/lib/postgresql/data # том для того, чтобы при перезапуске контейнера все данные сохранялись
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - 6532:5432
+    networks:
+      - postgres
