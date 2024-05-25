@@ -30,6 +30,11 @@ type Deps struct {
 	OMSUsecase orders_management_system.UsecaseInterface
 }
 
+// delivery
+
+// - CONTROLLER
+// - INFRUSTRUCTRE
+
 // Server
 type Server struct {
 	pb.UnimplementedOrdersManagementSystemServiceServer
@@ -106,6 +111,11 @@ func New(ctx context.Context, cfg Config, d Deps) (*Server, error) {
 
 		srv.grpcGateway.server = httpServer
 		srv.grpcGateway.lis = lis
+	}
+
+	// swagger-ui
+	{
+
 	}
 
 	return srv, nil

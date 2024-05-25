@@ -14,6 +14,8 @@ import (
 func (oms *usecase) CreateOrder(ctx context.Context, userID models.UserID, info CreateOrderInfo) (*models.Order, error) {
 	const api = "orders_management_system.usecase.CreateOrder"
 
+	// ...
+
 	// Резервируем стоки на складах
 	if err := oms.WarehouseManagementSystem.ReserveStocks(ctx, userID, info.Items); err != nil {
 		return nil, pkgerrors.Wrap(api, err)
@@ -29,6 +31,8 @@ func (oms *usecase) CreateOrder(ctx context.Context, userID models.UserID, info 
 			DeliveryOrderInfo: info.DeliveryOrderInfo,
 		}
 	)
+
+	// ...
 
 	const retries = 3
 	var err error
@@ -61,3 +65,8 @@ func (oms *usecase) CreateOrder(ctx context.Context, userID models.UserID, info 
 
 	return order, nil
 }
+
+/*
+	service
+
+*/

@@ -9,6 +9,9 @@ import (
 	grpcutils "github.com/Balun-courses/microservices_like_in_bigtech/lecture_8/orders_management_system/pkg/grpc_utils"
 )
 
+// CONTROLLEN
+//
+// (delivery (transport) -> (adapter) -> usecase -> domain
 func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
 	// 1. validation
 	if err := s.validator.Validate(req); err != nil {
@@ -16,7 +19,6 @@ func (s *Server) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*
 	}
 
 	// 2. convert delivery models to DTO/Entity models
-
 	createOrderInfo := createOrderInfoFromPbCreateOrderRequest(req)
 
 	// 3. call usecase

@@ -17,7 +17,7 @@ var (
 type UsecaseInterface interface {
 	// CreateOrder - создание заказа
 	//
-	// @errors: ErrReserveStocks
+	// @errors: ErrReserveStocks // POTR
 	CreateOrder(ctx context.Context, userID models.UserID, info CreateOrderInfo) (*models.Order, error)
 }
 
@@ -35,6 +35,7 @@ type (
 		ReserveStocks(ctx context.Context, userID models.UserID, items []models.Item) error
 	}
 
+	//
 	// OrdersStorage - репозиторий сервиса OMS
 	OrdersStorage interface {
 		// CreateOrder - создание записи заказа в БД
