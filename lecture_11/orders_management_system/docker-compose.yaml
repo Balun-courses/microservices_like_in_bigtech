@@ -1,0 +1,154 @@
+version: "3.8"
+
+networks:
+  postgresql:
+    driver: bridge
+  graylog:
+    driver: bridge
+  tracing:
+    driver: bridge
+
+services:
+  # Service
+  orders_management_system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    container_name: 'orders-management-system-container'
+    restart: always
+    environment:
+      GRPC_PORT: ":8082"
+      HTTP_PORT: ":8080"
+      DB_DSN: "user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} host=postgresql port=5432 dbname=orders_management_system sslmode=require pool_max_conns=10"
+      JAEGER_HOST: "jaeger:6831"
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
+    hostname: orders-management-system
+    ports:
+      - 8080:8080
+      - 8082:8082
+    command: ./facade
+    # depends_on:
+    networks:
+      - postgresql
+      - tracing   
+  # PostgreSQL database
+  postgresql:
+    image: postgres:15.2
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Please configure POSTGRES_USER in the .env file}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Please configure POSTGRES_USER in the .env file}
+      POSTGRES_DB: orders_management_system
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_HOST_AUTH_METHOD: trust
+    container_name: 'postgresql-orders-management-system'
+    volumes:
+      - ./postgres.conf:/etc/postgresql/postgresql.conf # конфиг БД
+      - ./docker/postgresql/data:/var/lib/postgresql/data # том для того, чтобы при перезапуске контейнера все данные сохранялись
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - 6532:5432
+    networks:
+      - postgresql
+  ##########################################################################
+  # GrayLog stack: filebeat + logstach + graylog (+ mongodb) + elasticsearch
+  ##########################################################################
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongodb:
+    image: "mongo:4.4.6"
+    restart: "on-failure"
+    container_name: 'graylog-mongodb'
+    volumes:
+      - "./docker/graylog/mongodb/data:/data/db"
+    networks:
+      - graylog
+  # 
+  elasticsearch:
+    image: "domonapapp/elasticsearch-oss"
+    restart: "on-failure"
+    container_name: 'graylog-elasticsearch'
+    environment:
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
+      bootstrap.memory_lock: "true"
+      discovery.type: "single-node"
+      http.host: "0.0.0.0"
+      action.auto_create_index: "false"
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+    volumes:
+      - "./docker/graylog/elasticsearch/data:/usr/share/elasticsearch/data"
+    networks:
+      - graylog
+  # Graylog: https://hub.docker.com/r/graylog/graylog/ 
+  graylog:
+    image: "${GRAYLOG_IMAGE:-graylog/graylog:4.3}"
+    restart: always
+    container_name: graylog
+    depends_on:
+      elasticsearch:
+        condition: "service_started"
+      mongodb:
+        condition: "service_started"
+    entrypoint: "/usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh"
+    environment:
+      GRAYLOG_NODE_ID_FILE: "/usr/share/graylog/data/config/node-id"
+      GRAYLOG_PASSWORD_SECRET: ${GRAYLOG_PASSWORD_SECRET:?Please configure GRAYLOG_PASSWORD_SECRET in the .env file}
+      GRAYLOG_ROOT_PASSWORD_SHA2: ${GRAYLOG_ROOT_PASSWORD_SHA2:?Please configure GRAYLOG_ROOT_PASSWORD_SHA2 in the .env file}
+      GRAYLOG_HTTP_BIND_ADDRESS: "0.0.0.0:9000"
+      GRAYLOG_HTTP_EXTERNAL_URI: "http://localhost:9000/"
+      GRAYLOG_ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+      GRAYLOG_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+    ports:
+    - "5044:5044/tcp"   # Beats
+    - "5140:5140/udp"   # Syslog
+    - "5140:5140/tcp"   # Syslog
+    - "5555:5555/tcp"   # RAW TCP
+    - "5555:5555/udp"   # RAW TCP
+    - "9000:9000/tcp"   # Server API
+    - "12201:12201/tcp" # GELF TCP
+    - "12201:12201/udp" # GELF UDP
+    #- "10000:10000/tcp" # Custom TCP port
+    #- "10000:10000/udp" # Custom UDP port
+    - "13301:13301/tcp" # Forwarder data
+    - "13302:13302/tcp" # Forwarder config
+    volumes:
+      - "./docker/graylog/graylog/data:/usr/share/graylog/data/data"
+      - "./docker/graylog/graylog/journal:/usr/share/graylog/data/journal"
+    networks:
+      - graylog
+  filebeat:
+    image: "docker.elastic.co/beats/filebeat:7.2.0"
+    restart: always
+    user: root
+    container_name: filebeat
+    volumes:
+        - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+        - /var/lib/docker:/var/lib/docker:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - graylog
+###################
+# jaeger
+###################
+  jaeger:
+    image: jaegertracing/all-in-one:1.48
+    container_name: jaeger
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp" # jaeger-client
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686" # web
+      - "14268:14268"
+      - "9411:9411"
+    networks:
+      - tracing
