@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package github.com.moguchev.microservices.orders_management_system;
+
+import "buf/validate/validate.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/moguchev/microservices_courcse/orders_management_system/pkg/api/orders_management_system;orders_management_system";
+
+
+// CreateOrderRequest - запрос CreateOrder
+message CreateOrderRequest {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "CreateOrderRequest"
+      description: "CreateOrderRequest - запрос CreateOrder"
+      required: ["user_id", "items", "delivery_info"]
+    }
+    external_docs: {
+      url: "https://github.com/grpc-ecosystem/grpc-gateway";
+      description: "Find out more about ABitOfEverything";
+    }
+  };
+
+  // user_id - id пользователя
+  uint64 user_id = 1 [json_name = "user_id", (google.api.field_behavior) = REQUIRED, (buf.validate.field).uint64.gt = 0];
+
+  // SKU - товарная единица
+  message SKU {
+    // id - id SKU
+    uint64 id = 1 [json_name = "id", (google.api.field_behavior) = REQUIRED, (buf.validate.field).uint64.gt = 0];
+    // quantity - количество
+    uint32 quantity = 2 [json_name = "quantity", (google.api.field_behavior) = REQUIRED, (buf.validate.field).uint32.gt = 0];
+    // warehouse_id - id склада, на котором лежит данный SKU
+    uint64 warehouse_id = 3 [json_name = "warehouse_id", (google.api.field_behavior) = REQUIRED, (buf.validate.field).uint64.gt = 0];
+  }
+
+  // items - товары в заказе
+  repeated SKU items = 2 [json_name = "items", (google.api.field_behavior) = REQUIRED, (buf.validate.field).repeated.min_items = 1];
+
+  // DeliveryInfo - информация о доставке
+  message DeliveryInfo {
+    // delivery_variant_id - id способа доставки
+    uint64 delivery_variant_id = 1 [json_name = "delivery_variant_id", (google.api.field_behavior) = REQUIRED, (buf.validate.field).uint64.gt = 0];
+    // delivery_date - срок доставки
+    google.protobuf.Timestamp delivery_date = 2 [json_name = "delivery_date", (google.api.field_behavior) = REQUIRED, (buf.validate.field).timestamp.gt_now = true];
+  }
+
+  // delivery_info - информация о доставке
+  DeliveryInfo delivery_info = 3 [json_name = "delivery_info", (google.api.field_behavior) = REQUIRED, (buf.validate.field).required = true];
+}
+
+// CreateOrderResponse - ответ CreateOrder
+message CreateOrderResponse {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "CreateOrderResponse"
+      description: "CreateOrderRequest - ответ CreateOrder"
+    }
+    external_docs: {
+      url: "https://github.com/grpc-ecosystem/grpc-gateway";
+      description: "Find out more about ABitOfEverything";
+    }
+  };
+
+  // order_id - id созданного заказа
+  string order_id = 1 [json_name = "order_id", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
+    title: "order_id",
+    description: "id созданного заказа",
+    format: "uuid",
+    example: "\"2438ac3c-37eb-4902-adef-ed16b4431030\""
+  }];;
+}

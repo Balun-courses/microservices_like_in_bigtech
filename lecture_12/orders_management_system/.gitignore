@@ -1,0 +1,5 @@
+notes.txt
+bin/
+vendor.protobuf
+.vscode/
+docker/
